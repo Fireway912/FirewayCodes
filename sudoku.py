@@ -10,7 +10,8 @@ def printTable(table):
 
 def sudokuSolver(tableOrigin,depth):
     table = copy.deepcopy(tableOrigin) 
-    lastlastSum= 999
+    lastlastlastSum = 9999
+    lastlastSum = 999
     lastSum = 99
     sum=0      
     for i in table:
@@ -39,6 +40,7 @@ def sudokuSolver(tableOrigin,depth):
                 #Se ja existe um numero no quadradinho então ele é a unica solução possivel    
                 else:
                     possible = [table[row][column]]
+                    
                 #Se existe apenas uma solução possivel para o quadradinho então ela é a solução    
                 if(len(possible)==1):
                     table[row][column]=possible[0]
@@ -55,11 +57,31 @@ def sudokuSolver(tableOrigin,depth):
                         return stat2
                     back = {'points':sum,'table':table}
                     return back
-                #Se por tres iterações consecutivas não achou soluções então este é o fim da linha, volte e tente a outra solução
-                if(lastlastSum == sum):
+                if(len(possible)==3 and lastlastSum==sum):
+                    table[row][column]=possible[0]
+                    stat1 = sudokuSolver(table,depth+1)
+                    if(stat1['points']==0):
+                        return stat1
+                    #Primeira não funcionou, teste a segunda solução
+                    table[row][column]=possible[1]
+                    stat2 = sudokuSolver(table,depth+1)
+                    if(stat2['points']==0):
+                        return stat2
+                    #Segunda não funcionou, teste a terceira solução
+                    table[row][column]=possible[1]
+                    stat3 = sudokuSolver(table,depth+1)
+                    if(stat3['points']==0):
+                        return stat3
                     back = {'points':sum,'table':table}
                     return back
 
+
+                #Se por tres iterações consecutivas não achou soluções então este é o fim da linha, volte e tente a outra solução
+                if(lastlastlastSum == sum or len(possible)==0):
+                    back = {'points':sum,'table':table}
+                    return back
+
+        lastlastlastSum = lastlastSum
         lastlastSum = lastSum
         lastSum = sum
         sum=0      
@@ -70,16 +92,28 @@ def sudokuSolver(tableOrigin,depth):
     return back
 
 #Esta é uma tabela que demorei 32 min para resolver no braço
-table = [[0, 0, 0, 8, 5, 0, 0, 7, 0],
-         [7, 0, 0, 0, 9, 2, 0, 0, 0],
-         [5, 0, 0, 0, 0, 0, 1, 0, 0],
-         [0, 0, 0, 0, 6, 9, 3, 4, 5],
-         [0, 4, 0, 0, 0, 0, 0, 2, 0],
-         [0, 0, 6, 0, 3, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 9, 0, 3],
-         [0, 1, 0, 0, 0, 3, 6, 8, 7],
-         [0, 0, 3, 9, 0, 0, 2, 5, 0]
+# table = [[0, 0, 0, 8, 5, 0, 0, 7, 0],
+#          [7, 0, 0, 0, 9, 2, 0, 0, 0],
+#          [5, 0, 0, 0, 0, 0, 1, 0, 0],
+#          [0, 0, 0, 0, 6, 9, 3, 4, 5],
+#          [0, 4, 0, 0, 0, 0, 0, 2, 0],
+#          [0, 0, 6, 0, 3, 0, 0, 0, 0],
+#          [0, 0, 0, 0, 0, 0, 9, 0, 3],
+#          [0, 1, 0, 0, 0, 3, 6, 8, 7],
+#          [0, 0, 3, 9, 0, 0, 2, 5, 0]
+#          ]
+
+table = [[0, 8, 6, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 5, 0, 9, 2, 0],
+         [0, 0, 0, 0, 4, 0, 5, 0, 3],
+         [0, 7, 0, 0, 0, 2, 0, 1, 0],
+         [0, 0, 0, 0, 0, 3, 0, 9, 0],
+         [0, 2, 8, 0, 0, 7, 0, 0, 0],
+         [2, 0, 0, 6, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 3, 4],
+         [3, 0, 0, 1, 0, 0, 0, 0, 7]
          ]
+
 
 #Imprimir bonitinho a matriz
 printTable(sudokuSolver(table,0)['table'])
